@@ -136,7 +136,6 @@ module UART_TX
       // Stay here 1 clock
       CLEANUP :
         begin
-          o_TX_Done <= 1'b1;
           r_SM_Main <= IDLE;
         end
       
