@@ -1,7 +1,7 @@
 -- Russell Merrick - http://www.nandland.com
 -- 
 -- Testbench for FIFO made from registers. 
--- Demonstrates basic reads/writes working
+-- Demonstrates basic reads/writes working correctly
  
 library ieee;
 use ieee.std_logic_1164.all;
