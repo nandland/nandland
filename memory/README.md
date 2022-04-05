@@ -17,8 +17,8 @@ This repository can be imported for use in your own projects. I have found succe
 
 First navigate to a directory in which to import this repository. Then do:
 
-`git subtree add --prefix memory https://github.com/nandland/memory.git master --squash`
+`git subtree add --prefix memory https://github.com/nandland/memory.git main --squash`
 
 To pull in latest changes:
 
-`git subtree pull --prefix memory https://github.com/nandland/memory.git master --squash`
+`git subtree pull --prefix memory https://github.com/nandland/memory.git main --squash`
