@@ -10,16 +10,13 @@
 // Parameters: 
 // WIDTH     - Width of the FIFO
 // DEPTH     - Max number of items able to be stored in the FIFO
-// MAKE_FWFT - Use First-Word Fall Through. Make output immediately
-//             have first written word.  1=FWFT, 0=Regular
 //
 // This FIFO cannot be used to cross clock domains, because in order to keep count
 // correctly it would need to handle all metastability issues. 
 // If crossing clock domains is required, use FIFO primitives directly from the vendor.
 
 module FIFO #(parameter WIDTH = 8, 
-              parameter DEPTH = 256, 
-              parameter MAKE_FWFT = 0)
+              parameter DEPTH = 256)
   (input                     i_Rst_L,
    input                     i_Clk,
    // Write Side
@@ -104,12 +101,7 @@ module FIFO #(parameter WIDTH = 8,
         end
       end
 
-      // Handle FWFT 
-      if (i_Wr_DV & o_Empty & (MAKE_FWFT == 1))
-      begin
-        o_Rd_Data <= i_Wr_Data;
-      end
-      else if (i_Rd_En)
+      if (i_Rd_En)
       begin
         o_Rd_Data <= w_Rd_Data;
       end

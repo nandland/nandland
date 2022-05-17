@@ -6,7 +6,6 @@ module FIFO_TB ();
 
   localparam DEPTH = 4;
   localparam WIDTH = 8;
-  localparam MAKE_FWFT = 1;
 
   reg r_Clk = 1'b0, r_Rst_L = 1'b0;
   reg r_Wr_DV = 1'b0, r_Rd_En = 1'b0;
@@ -15,7 +14,7 @@ module FIFO_TB ();
   wire w_AF_Flag, w_AE_Flag, w_Full, w_Empty, w_Rd_DV;
   wire [WIDTH-1:0] w_Rd_Data;
   
-  FIFO #(.WIDTH(WIDTH), .DEPTH(DEPTH), .MAKE_FWFT(MAKE_FWFT)) UUT 
+  FIFO #(.WIDTH(WIDTH), .DEPTH(DEPTH)) UUT 
   (
   .i_Rst_L(r_Rst_L),
   .i_Clk(r_Clk),
@@ -63,7 +62,6 @@ module FIFO_TB ();
     r_Wr_DV   <= 1'b0;
     @(posedge r_Clk);
     assert (!w_Empty);
-    assert (w_Rd_Data == 8'hAB); // test FWFT
 
     repeat(4) @(posedge r_Clk);
 

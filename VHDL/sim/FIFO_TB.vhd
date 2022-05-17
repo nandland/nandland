@@ -14,7 +14,6 @@ architecture test of FIFO_TB is
 
   constant DEPTH     : integer := 4;
   constant WIDTH     : integer := 8;
-  constant MAKE_FWFT : boolean := true;
 
   signal r_Clk, r_Rst_L : std_logic := '0';
   signal r_Wr_DV, r_Rd_En : std_logic := '0';
@@ -47,8 +46,7 @@ begin
   UUT : entity work.FIFO
   generic map(
     WIDTH     => WIDTH,
-    DEPTH     => DEPTH,
-    MAKE_FWFT => MAKE_FWFT)
+    DEPTH     => DEPTH)
   port map (
     i_Rst_L => r_Rst_L,
     i_Clk   => r_Clk,
@@ -78,7 +76,6 @@ begin
     r_Wr_DV   <= '0';
     wait until rising_edge(r_Clk);
     assert not w_Empty;
-    assert w_Rd_Data = X"AB"; -- test FWFT
 
     wait until rising_edge(r_Clk);
     wait until rising_edge(r_Clk);
@@ -93,8 +90,6 @@ begin
     assert w_Rd_DV;
     assert w_Empty;
     assert w_Rd_Data = X"AB";
-
-    assert false report "Got here 1" severity note;
 
     -- Test: Fill FIFO with incrementing pattern, then read it back.
     reset_fifo(r_Rst_L, r_Wr_DV, r_Rd_En);
@@ -123,8 +118,6 @@ begin
     end loop;
     assert w_Empty;
 
-    assert false report "Got here 2" severity note;
-
     -- Test: Read and write on same clock cycle when empty + full
     reset_fifo(r_Rst_L, r_Wr_DV, r_Rd_En);
     r_Rd_En <= '1';
@@ -144,8 +137,6 @@ begin
     assert w_Full;
     r_Wr_DV <= '0';
     r_Rd_En <= '0';
-
-    assert false report "Got here 3" severity note;
 
     -- Test: Almost Empty, Almost Full Flags
     -- AE is set to 1, AF is set to 3
