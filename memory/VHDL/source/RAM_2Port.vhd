@@ -40,7 +40,7 @@ architecture RTL of RAM_2Port is
 
   -- Create Memory that is DEPTH x WIDTH
   type t_Mem is array (0 to DEPTH-1) of std_logic_vector(WIDTH-1 downto 0);
-  signal r_Mem : t_Mem := (others => (others => '0'));
+  signal r_Mem : t_Mem;
 
 begin
 

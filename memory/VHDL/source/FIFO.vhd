@@ -10,8 +10,6 @@
 -- Generics: 
 -- WIDTH     - Width of the FIFO
 -- DEPTH     - Max number of items able to be stored in the FIFO
--- MAKE_FWFT - Use First-Word Fall Through. Make output immediately
---             have first written word.  1=FWFT, 0=Regular
 --
 -- This FIFO cannot be used to cross clock domains, because in order to keep count
 -- correctly it would need to handle all metastability issues. 
@@ -25,8 +23,7 @@ use ieee.math_real.all;
 entity FIFO is 
   generic (
     WIDTH     : integer := 8;
-    DEPTH     : integer := 256;
-    MAKE_FWFT : boolean := false);
+    DEPTH     : integer := 256);
   port (
     i_Rst_L : in std_logic;
     i_Clk   : in std_logic;
@@ -122,10 +119,7 @@ begin
         end if;
       end if;
 
-      -- Handle FWFT 
-      if i_Wr_DV = '1' and o_Empty = '1' and MAKE_FWFT then
-        o_Rd_Data <= i_Wr_Data;
-      elsif i_Rd_En = '1' then
+      if i_Rd_En = '1' then
         o_Rd_Data <= w_Rd_Data;
       end if;
 
