@@ -32,9 +32,9 @@ end UART_TX;
 
 architecture RTL of UART_TX is
 
-  type t_SM_Main is (s_Idle, s_TX_Start_Bit, s_TX_Data_Bits,
-                     s_TX_Stop_Bit, s_Cleanup);
-  signal r_SM_Main : t_SM_Main := s_Idle;
+  type t_SM_Main is (IDLE, TX_START_BIT, TX_DATA_BITS,
+                     TX_STOP_BIT, CLEANUP);
+  signal r_SM_Main : t_SM_Main := IDLE;
 
   signal r_Clk_Count : integer range 0 to g_CLKS_PER_BIT-1 := 0;
   signal r_Bit_Index : integer range 0 to 7 := 0;  -- 8 Bits Total
@@ -48,82 +48,83 @@ begin
   begin
     if rising_edge(i_Clk) then
         
+      r_TX_Done   <= '0';  -- Default assignment
+
       case r_SM_Main is
 
-        when s_Idle =>
+        when IDLE =>
           o_TX_Active <= '0';
           o_TX_Serial <= '1';         -- Drive Line High for Idle
-          r_TX_Done   <= '0';
           r_Clk_Count <= 0;
           r_Bit_Index <= 0;
 
           if i_TX_DV = '1' then
             r_TX_Data <= i_TX_Byte;
-            r_SM_Main <= s_TX_Start_Bit;
+            r_SM_Main <= TX_START_BIT;
           else
-            r_SM_Main <= s_Idle;
+            r_SM_Main <= IDLE;
           end if;
 
           
         -- Send out Start Bit. Start bit = 0
-        when s_TX_Start_Bit =>
+        when TX_START_BIT =>
           o_TX_Active <= '1';
           o_TX_Serial <= '0';
 
           -- Wait g_CLKS_PER_BIT-1 clock cycles for start bit to finish
           if r_Clk_Count < g_CLKS_PER_BIT-1 then
             r_Clk_Count <= r_Clk_Count + 1;
-            r_SM_Main   <= s_TX_Start_Bit;
+            r_SM_Main   <= TX_START_BIT;
           else
             r_Clk_Count <= 0;
-            r_SM_Main   <= s_TX_Data_Bits;
+            r_SM_Main   <= TX_DATA_BITS;
           end if;
 
           
         -- Wait g_CLKS_PER_BIT-1 clock cycles for data bits to finish          
-        when s_TX_Data_Bits =>
+        when TX_DATA_BITS =>
           o_TX_Serial <= r_TX_Data(r_Bit_Index);
           
           if r_Clk_Count < g_CLKS_PER_BIT-1 then
             r_Clk_Count <= r_Clk_Count + 1;
-            r_SM_Main   <= s_TX_Data_Bits;
+            r_SM_Main   <= TX_DATA_BITS;
           else
             r_Clk_Count <= 0;
             
             -- Check if we have sent out all bits
             if r_Bit_Index < 7 then
               r_Bit_Index <= r_Bit_Index + 1;
-              r_SM_Main   <= s_TX_Data_Bits;
+              r_SM_Main   <= TX_DATA_BITS;
             else
               r_Bit_Index <= 0;
-              r_SM_Main   <= s_TX_Stop_Bit;
+              r_SM_Main   <= TX_STOP_BIT;
             end if;
           end if;
 
 
         -- Send out Stop bit.  Stop bit = 1
-        when s_TX_Stop_Bit =>
+        when TX_STOP_BIT =>
           o_TX_Serial <= '1';
 
           -- Wait g_CLKS_PER_BIT-1 clock cycles for Stop bit to finish
           if r_Clk_Count < g_CLKS_PER_BIT-1 then
             r_Clk_Count <= r_Clk_Count + 1;
-            r_SM_Main   <= s_TX_Stop_Bit;
+            r_SM_Main   <= TX_STOP_BIT;
           else
             r_TX_Done   <= '1';
             r_Clk_Count <= 0;
-            r_SM_Main   <= s_Cleanup;
+            r_SM_Main   <= CLEANUP;
           end if;
 
                   
         -- Stay here 1 clock
-        when s_Cleanup =>
+        when CLEANUP =>
           o_TX_Active <= '0';
-          r_SM_Main   <= s_Idle;
+          r_SM_Main   <= IDLE;
           
             
         when others =>
-          r_SM_Main <= s_Idle;
+          r_SM_Main <= IDLE;
 
       end case;
     end if;

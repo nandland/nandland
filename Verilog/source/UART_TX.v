@@ -41,15 +41,16 @@ module UART_TX
     if (~i_Rst_L)
     begin
       r_SM_Main <= 3'b000;
-      o_TX_Done <= 1'b0;
     end
     else
     begin
+
+      o_TX_Done <= 1'b0; // default assignment
+
       case (r_SM_Main)
       IDLE :
         begin
           o_TX_Serial   <= 1'b1;         // Drive Line High for Idle
-          o_TX_Done     <= 1'b0;
           r_Clock_Count <= 0;
           r_Bit_Index   <= 0;
           
